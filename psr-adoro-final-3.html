@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PSR Digital — Ad'oro</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --vermelho: #C0392B;
+  --vermelho-dark: #922B21;
+  --preto: #0f0f0f;
+  --cinza-escuro: #1a1a1a;
+  --cinza-medio: #242424;
+  --cinza-claro: #2e2e2e;
+  --borda: #383838;
+  --branco: #F4F4F4;
+  --muted: #777;
+  --verde: #27AE60;
+  --amarelo: #F39C12;
+  --azul: #2980B9;
+}
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body { font-family:'Barlow',sans-serif; background:var(--preto); color:var(--branco); min-height:100vh; padding-bottom:60px; }
+
+/* HEADER */
+.header {
+  background:linear-gradient(135deg,#8B0000,#C0392B);
+  padding:0 16px; display:flex; align-items:center; gap:12px;
+  position:sticky; top:0; z-index:200; min-height:56px;
+  box-shadow:0 2px 16px rgba(0,0,0,.6);
+}
+.logo { background:white; border-radius:6px; padding:4px 8px; line-height:1; }
+.logo span:first-child { display:block; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:15px; color:#C0392B; }
+.logo span:last-child { display:block; font-size:6px; color:#666; letter-spacing:.8px; }
+.header h1 { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; color:white; text-transform:uppercase; letter-spacing:1px; }
+.header p { font-size:10px; color:rgba(255,255,255,.65); }
+
+/* SCREENS */
+.screen { display:none; }
+.screen.active { display:block; animation:fadeIn .2s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+/* ========== TELA LOGIN ========== */
+.login-wrap {
+  min-height: calc(100vh - 56px);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:30px 24px;
+}
+.login-card {
+  width:100%; max-width:360px;
+  background:var(--cinza-escuro); border:1px solid var(--borda);
+  border-radius:12px; padding:28px 24px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.login-icon { font-size:42px; text-align:center; margin-bottom:16px; }
+.login-card h2 { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800; text-transform:uppercase; letter-spacing:1px; text-align:center; margin-bottom:4px; }
+.login-card p { font-size:12px; color:var(--muted); text-align:center; margin-bottom:24px; }
+.login-field { margin-bottom:16px; }
+.login-field label { display:block; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.login-field input {
+  width:100%; background:var(--cinza-medio); border:1px solid var(--borda);
+  border-radius:6px; padding:13px 14px; color:var(--branco);
+  font-family:'Barlow',sans-serif; font-size:16px; outline:none;
+  letter-spacing:2px; text-transform:uppercase;
+  transition:border-color .15s;
+}
+.login-field input:focus { border-color:var(--vermelho); }
+.login-hint { font-size:11px; color:var(--muted); text-align:center; margin-top:10px; }
+.btn-login {
+  width:100%; background:var(--vermelho); border:none; border-radius:7px;
+  padding:14px; font-family:'Barlow Condensed',sans-serif; font-size:17px;
+  font-weight:800; color:white; text-transform:uppercase; letter-spacing:1px;
+  cursor:pointer; transition:opacity .15s; margin-top:4px;
+}
+.btn-login:active { opacity:.8; }
+.empresa-tag {
+  background:rgba(192,57,43,.12); border:1px solid rgba(192,57,43,.3);
+  border-radius:6px; padding:10px 14px; margin-bottom:16px;
+  font-size:13px; color:var(--branco); display:none;
+}
+.empresa-tag strong { color:var(--vermelho); }
+
+/* ========== HOME ========== */
+.home-top { padding:20px 16px 4px; display:flex; justify-content:space-between; align-items:center; }
+.home-top h2 { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:2px; }
+.badge-emp { background:rgba(192,57,43,.15); border:1px solid rgba(192,57,43,.3); border-radius:20px; padding:4px 10px; font-size:11px; color:var(--vermelho); font-weight:700; }
+.home-body { padding:0 16px; }
+.psr-card {
+  background:var(--cinza-escuro); border:1px solid var(--borda);
+  border-left:4px solid var(--vermelho); border-radius:8px;
+  padding:15px 14px; margin-bottom:10px; cursor:pointer;
+  display:flex; align-items:center; justify-content:space-between;
+  transition:background .15s;
+}
+.psr-card:active { background:var(--cinza-medio); }
+.pl { display:flex; align-items:center; gap:12px; }
+.pi { font-size:26px; width:38px; text-align:center; }
+.psr-card h3 { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; text-transform:uppercase; }
+.psr-card p { font-size:11px; color:var(--muted); margin-top:2px; }
+.pa { color:var(--vermelho); font-size:20px; }
+.btn-sec {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; background:transparent; border:1px solid var(--borda);
+  border-radius:8px; padding:13px; color:var(--muted);
+  font-family:'Barlow',sans-serif; font-size:13px; font-weight:600;
+  cursor:pointer; margin-top:6px; transition:all .15s;
+}
+.btn-sec:active { border-color:var(--vermelho); color:var(--vermelho); }
+.btn-logout {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:100%; background:transparent; border:none;
+  padding:10px; color:var(--muted); font-size:12px; cursor:pointer;
+  margin-top:4px;
+}
+
+/* ========== FORM ========== */
+.form-header {
+  background:var(--cinza-escuro); border-bottom:1px solid var(--borda);
+  padding:12px 16px; display:flex; align-items:center; gap:10px;
+  position:sticky; top:56px; z-index:99;
+}
+.btn-back { background:none; border:none; color:var(--vermelho); font-size:26px; cursor:pointer; line-height:1; padding:0; }
+.fh-title { font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:800; text-transform:uppercase; }
+.fh-sub { font-size:11px; color:var(--muted); }
+.form-body { padding:16px; }
+
+/* SEÇÕES */
+.sec-hd {
+  background:var(--vermelho); padding:8px 12px; border-radius:6px 6px 0 0;
+  margin-top:20px; font-family:'Barlow Condensed',sans-serif; font-size:13px;
+  font-weight:700; text-transform:uppercase; letter-spacing:1px; color:white;
+}
+.sec-hd:first-child { margin-top:0; }
+.sec-bd {
+  background:var(--cinza-escuro); border:1px solid var(--borda);
+  border-top:none; border-radius:0 0 6px 6px; padding:14px 12px;
+}
+
+/* FIELDS */
+.field { margin-bottom:14px; }
+.field:last-child { margin-bottom:0; }
+.field label { display:block; font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin-bottom:5px; }
+.req { color:#e74c3c; }
+.field input,.field select,.field textarea {
+  width:100%; background:var(--cinza-medio); border:1px solid var(--borda);
+  border-radius:5px; padding:10px 12px; color:var(--branco);
+  font-family:'Barlow',sans-serif; font-size:14px; outline:none;
+  transition:border-color .15s; -webkit-appearance:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus { border-color:var(--vermelho); }
+.field textarea { min-height:80px; resize:vertical; }
+.r2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.r3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+/* EXEC BUTTONS */
+.exec-opts { display:flex; gap:8px; }
+.exec-btn {
+  flex:1; padding:10px; border-radius:5px; border:1px solid var(--borda);
+  background:var(--cinza-medio); color:var(--muted);
+  font-family:'Barlow',sans-serif; font-size:13px; font-weight:600;
+  cursor:pointer; text-align:center; transition:all .15s;
+}
+.exec-btn.active { border-color:var(--vermelho); background:rgba(192,57,43,.15); color:var(--branco); }
+
+/* RISCOS / EPIS */
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.chk-item {
+  background:var(--cinza-medio); border:1px solid var(--borda);
+  border-radius:5px; padding:9px 10px; cursor:pointer;
+  display:flex; align-items:flex-start; gap:8px; transition:all .15s;
+}
+.chk-item.r.checked { border-color:var(--vermelho); background:rgba(192,57,43,.08); }
+.chk-item.e.checked { border-color:var(--amarelo); background:rgba(243,156,18,.06); }
+.chkbox {
+  width:18px; height:18px; min-width:18px; border:2px solid var(--borda);
+  border-radius:3px; display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; transition:all .15s; margin-top:1px;
+}
+.chk-item.r.checked .chkbox { background:var(--vermelho); border-color:var(--vermelho); color:white; }
+.chk-item.e.checked .chkbox { background:var(--amarelo); border-color:var(--amarelo); color:#111; }
+.chk-item span { font-size:11px; line-height:1.3; }
+
+/* MEDIDAS */
+.med-row { background:var(--cinza-medio); border:1px solid var(--borda); border-radius:5px; padding:10px; margin-bottom:8px; }
+.med-txt { font-size:12px; line-height:1.4; margin-bottom:8px; }
+.med-ctrl { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.sn { padding:5px 13px; border-radius:4px; border:1px solid var(--borda); background:transparent; color:var(--muted); font-size:12px; font-weight:700; cursor:pointer; transition:all .15s; }
+.sn.sim.on { background:rgba(39,174,96,.2); border-color:#27AE60; color:#27AE60; }
+.sn.nao.on { background:rgba(192,57,43,.2); border-color:var(--vermelho); color:var(--vermelho); }
+.sn.na.on { background:rgba(120,120,120,.2); border-color:#888; color:#aaa; }
+.med-obs { flex:1; min-width:110px; background:var(--cinza-escuro); border:1px solid var(--borda); border-radius:4px; padding:5px 8px; color:var(--branco); font-family:'Barlow',sans-serif; font-size:12px; outline:none; }
+.med-obs:focus { border-color:var(--vermelho); }
+
+/* ========== EQUIPE + ASSINATURA ========== */
+.membro-card {
+  background:var(--cinza-medio); border:1px solid var(--borda);
+  border-radius:8px; padding:14px; margin-bottom:12px; position:relative;
+}
+.membro-num {
+  position:absolute; top:-1px; left:14px;
+  background:var(--vermelho); color:white;
+  font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700;
+  padding:2px 8px; border-radius:0 0 5px 5px; letter-spacing:1px;
+}
+.membro-fields { padding-top:18px; }
+.rm-btn {
+  position:absolute; top:8px; right:10px;
+  background:rgba(192,57,43,.2); border:1px solid rgba(192,57,43,.3);
+  border-radius:4px; color:#e74c3c; font-size:13px;
+  width:26px; height:26px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* CANVAS ASSINATURA */
+.sign-wrap {
+  background:white; border-radius:6px; overflow:hidden;
+  border:2px solid var(--borda); position:relative; margin-top:10px;
+}
+.sign-canvas { width:100%; height:120px; display:block; cursor:crosshair; touch-action:none; }
+.sign-label {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-size:12px; color:#ccc; pointer-events:none; text-align:center;
+  line-height:1.4; transition:opacity .2s;
+}
+.sign-actions { display:flex; gap:6px; margin-top:6px; }
+.btn-sign-clear {
+  flex:1; padding:8px; background:transparent; border:1px solid var(--borda);
+  border-radius:5px; color:var(--muted); font-size:12px; font-weight:600;
+  cursor:pointer; font-family:'Barlow',sans-serif;
+}
+.btn-sign-ok {
+  flex:2; padding:8px; background:rgba(39,174,96,.15); border:1px solid #27AE60;
+  border-radius:5px; color:#27AE60; font-size:12px; font-weight:700;
+  cursor:pointer; font-family:'Barlow',sans-serif;
+}
+.sign-saved-wrap { margin-top:8px; display:none; text-align:center; }
+.sign-saved-wrap img { max-width:100%; border-radius:5px; border:1px solid var(--borda); }
+.sign-ok-badge { font-size:11px; color:#27AE60; font-weight:700; margin-top:4px; display:flex; align-items:center; justify-content:center; gap:4px; }
+
+.add-membro {
+  width:100%; background:transparent; border:1px dashed var(--borda);
+  border-radius:6px; padding:12px; color:var(--muted);
+  font-family:'Barlow',sans-serif; font-size:13px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:6px; transition:all .15s;
+}
+.add-membro:active { border-color:var(--vermelho); color:var(--vermelho); }
+
+/* FOTOS */
+.photo-zone { background:var(--cinza-medio); border:2px dashed var(--borda); border-radius:6px; padding:20px; text-align:center; cursor:pointer; transition:border-color .15s; }
+.photo-zone:active { border-color:var(--vermelho); }
+.photo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
+.photo-wrap { position:relative; aspect-ratio:1; }
+.photo-wrap img { width:100%; height:100%; object-fit:cover; border-radius:5px; }
+.photo-del { position:absolute; top:-5px; right:-5px; width:20px; height:20px; background:#e74c3c; border:none; border-radius:50%; color:white; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+
+/* LIBERAÇÃO */
+.lib-blk { background:rgba(192,57,43,.06); border:1px solid rgba(192,57,43,.2); border-radius:6px; padding:12px; margin-bottom:10px; }
+.lib-title { font-size:10px; font-weight:700; color:var(--vermelho); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+
+/* TESTES ATM */
+.atm-t { width:100%; border-collapse:collapse; font-size:11px; }
+.atm-t th { background:rgba(192,57,43,.25); padding:5px 6px; text-align:center; font-size:9px; text-transform:uppercase; letter-spacing:.5px; border:1px solid var(--borda); }
+.atm-t td { padding:3px; border:1px solid var(--borda); }
+.atm-t td input { background:var(--cinza-escuro); border:none; border-radius:3px; padding:5px 4px; color:var(--branco); font-size:11px; width:100%; outline:none; text-align:center; }
+.atm-lbl { font-size:10px; padding:5px 6px; background:rgba(255,255,255,.03); color:var(--muted); font-weight:600; }
+
+/* BOTÕES PRINCIPAIS */
+.btn-primary {
+  width:100%; background:var(--vermelho); border:none; border-radius:7px;
+  padding:15px; font-family:'Barlow Condensed',sans-serif; font-size:18px;
+  font-weight:800; color:white; text-transform:uppercase; letter-spacing:1px;
+  cursor:pointer; margin-top:24px; transition:opacity .15s;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-primary:active { opacity:.8; }
+.btn-primary.verde { background:var(--verde); }
+.btn-outline {
+  width:100%; background:transparent; border:1px solid var(--borda); border-radius:7px;
+  padding:13px; font-family:'Barlow Condensed',sans-serif; font-size:15px;
+  font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px;
+  cursor:pointer; margin-top:8px; transition:all .15s;
+}
+.btn-outline:active { border-color:var(--vermelho); color:var(--vermelho); }
+
+/* ENCERRAMENTO */
+.enc-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--borda); gap:10px; }
+.enc-row:last-child { border-bottom:none; }
+.enc-row span { font-size:12px; flex:1; }
+.enc-btns { display:flex; gap:6px; }
+
+/* REGISTROS */
+.reg-body { padding:16px; }
+.reg-card { background:var(--cinza-escuro); border:1px solid var(--borda); border-left:4px solid var(--vermelho); border-radius:7px; padding:14px; margin-bottom:10px; }
+.reg-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.reg-badge { background:rgba(192,57,43,.15); border:1px solid rgba(192,57,43,.3); color:var(--vermelho); font-size:9px; font-weight:700; padding:3px 8px; border-radius:10px; text-transform:uppercase; }
+.reg-num { font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:var(--amarelo); }
+.reg-date { font-size:10px; color:var(--muted); }
+.reg-info p { font-size:13px; margin-bottom:2px; }
+.reg-info span { font-size:11px; color:var(--muted); }
+.reg-acts { display:flex; gap:8px; margin-top:10px; }
+.bsm { flex:1; padding:8px; border-radius:5px; border:1px solid var(--borda); background:transparent; color:var(--muted); font-size:11px; font-weight:600; cursor:pointer; font-family:'Barlow',sans-serif; }
+.bsm.p { border-color:var(--vermelho); color:var(--vermelho); }
+.bsm.g { border-color:var(--verde); color:var(--verde); }
+
+/* STATUS ENVIO */
+.status-bar {
+  background:var(--cinza-escuro); border:1px solid var(--borda);
+  border-radius:6px; padding:10px 14px; margin-top:10px;
+  display:flex; align-items:center; gap:10px; display:none;
+}
+.status-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.status-dot.ok { background:var(--verde); }
+.status-dot.err { background:var(--vermelho); }
+.status-dot.loading { background:var(--amarelo); animation:pulse .8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.status-txt { font-size:12px; }
+
+/* TOAST */
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--verde); color:white; padding:11px 22px; border-radius:7px; font-size:13px; font-weight:600; transition:transform .3s; z-index:999; box-shadow:0 4px 20px rgba(0,0,0,.5); white-space:nowrap; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+.toast.err { background:var(--vermelho); }
+
+/* LOADING */
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; flex-direction:column; gap:14px; z-index:999; }
+.overlay.show { display:flex; }
+.spin { width:38px; height:38px; border:3px solid var(--borda); border-top-color:var(--vermelho); border-radius:50%; animation:sp .7s linear infinite; }
+@keyframes sp { to{transform:rotate(360deg)} }
+
+.empty { text-align:center; padding:60px 20px; color:var(--muted); }
+.pet-nota { background:rgba(243,156,18,.08); border:1px solid rgba(243,156,18,.2); border-radius:5px; padding:10px; margin-bottom:12px; font-size:11px; color:var(--amarelo); }
+
+/* ========== PAINEL INTERNO ========== */
+.painel-login-wrap { min-height:calc(100vh - 56px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px 24px; }
+.painel-card { width:100%; max-width:380px; background:var(--cinza-escuro); border:1px solid var(--borda); border-radius:12px; padding:28px 24px; box-shadow:0 8px 32px rgba(0,0,0,.5); }
+.painel-card h2 { font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800; text-transform:uppercase; letter-spacing:1px; text-align:center; margin-bottom:4px; }
+.painel-card .sub { font-size:12px; color:var(--muted); text-align:center; margin-bottom:24px; }
+.role-opts { display:flex; gap:8px; margin-bottom:16px; }
+.role-btn { flex:1; padding:12px 8px; border-radius:6px; border:1px solid var(--borda); background:var(--cinza-medio); color:var(--muted); font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; cursor:pointer; text-align:center; transition:all .15s; }
+.role-btn.active { border-color:var(--azul); background:rgba(41,128,185,.15); color:var(--branco); }
+.painel-body { padding:16px; }
+.painel-header { background:var(--cinza-escuro); border-bottom:1px solid var(--borda); padding:12px 16px; display:flex; align-items:center; gap:10px; position:sticky; top:56px; z-index:99; }
+.painel-badge { background:rgba(41,128,185,.2); border:1px solid rgba(41,128,185,.4); border-radius:20px; padding:4px 12px; font-size:11px; font-weight:700; color:#5DADE2; }
+.psr-pend-card { background:var(--cinza-escuro); border:1px solid var(--borda); border-radius:8px; padding:14px; margin-bottom:10px; }
+.status-pill { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:12px; font-size:10px; font-weight:700; text-transform:uppercase; margin-bottom:8px; }
+.pill-pend { background:rgba(243,156,18,.15); border:1px solid rgba(243,156,18,.3); color:var(--amarelo); }
+.pill-eng { background:rgba(41,128,185,.15); border:1px solid rgba(41,128,185,.3); color:#5DADE2; }
+.pill-lib { background:rgba(39,174,96,.15); border:1px solid rgba(39,174,96,.3); color:var(--verde); }
+.pill-rep { background:rgba(192,57,43,.15); border:1px solid rgba(192,57,43,.3); color:var(--vermelho); }
+.psr-pend-title { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; text-transform:uppercase; }
+.psr-pend-info { font-size:12px; color:var(--muted); margin-top:3px; }
+.psr-pend-acts { display:flex; gap:8px; margin-top:10px; }
+.btn-rev { flex:2; padding:10px; border-radius:6px; background:rgba(41,128,185,.15); border:1px solid rgba(41,128,185,.4); color:#5DADE2; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; cursor:pointer; }
+.rev-section { background:var(--cinza-escuro); border:1px solid var(--borda); border-radius:8px; padding:14px; margin-bottom:12px; }
+.rev-section-title { font-size:11px; font-weight:700; color:var(--vermelho); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+.rev-field { margin-bottom:8px; }
+.rev-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.rev-val { font-size:14px; color:var(--branco); margin-top:2px; }
+.rev-chk-grid { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+.rev-chk { font-size:11px; padding:5px 8px; border-radius:4px; }
+.rev-chk.on { background:rgba(192,57,43,.1); color:var(--vermelho); }
+.rev-chk.off { color:var(--muted); opacity:.4; }
+.rev-med { padding:8px 0; border-bottom:1px solid var(--borda); display:flex; gap:8px; align-items:flex-start; }
+.rev-med:last-child { border-bottom:none; }
+.rev-med-pill { padding:2px 8px; border-radius:10px; font-size:9px; font-weight:700; flex-shrink:0; margin-top:2px; }
+.pill-sim { background:rgba(39,174,96,.2); color:var(--verde); }
+.pill-nao { background:rgba(192,57,43,.2); color:var(--vermelho); }
+.pill-na { background:rgba(120,120,120,.2); color:#aaa; }
+.pill-vz { background:rgba(120,120,120,.1); color:#555; }
+.rev-med-txt { font-size:11px; line-height:1.4; }
+.rev-sign-item img { width:100%; border-radius:5px; border:1px solid var(--borda); background:white; }
+.rev-sign-name { font-size:11px; color:var(--muted); margin-top:4px; }
+.painel-acoes { background:var(--cinza-escuro); border:1px solid var(--borda); border-radius:8px; padding:16px; margin-bottom:12px; }
+.painel-acoes-title { font-size:11px; font-weight:700; color:#5DADE2; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+.btn-liberar { width:100%; background:var(--verde); border:none; border-radius:7px; padding:14px; font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:800; color:white; text-transform:uppercase; letter-spacing:1px; cursor:pointer; margin-bottom:8px; transition:opacity .15s; }
+.btn-reprovar { width:100%; background:transparent; border:1px solid var(--vermelho); border-radius:7px; padding:12px; font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:700; color:var(--vermelho); text-transform:uppercase; cursor:pointer; }
+.tab-bar { display:flex; gap:4px; padding:12px 16px 0; }
+.tab-btn { flex:1; padding:8px; border-radius:6px 6px 0 0; border:1px solid var(--borda); border-bottom:none; background:var(--cinza-medio); color:var(--muted); font-family:'Barlow',sans-serif; font-size:12px; font-weight:600; cursor:pointer; text-align:center; }
+.tab-btn.active { background:var(--cinza-escuro); color:var(--branco); }
+.tab-count { display:inline-block; background:var(--vermelho); color:white; border-radius:10px; padding:1px 6px; font-size:10px; margin-left:4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo"><span>Ad'oro</span><span>O MELHOR DO FRANGO</span></div>
+  <div><h1>PSR Digital</h1><p>Permissão de Serviço de Risco</p></div>
+</div>
+
+<div class="overlay" id="overlay"><div class="spin"></div><p style="font-size:13px;color:var(--muted)" id="overlayMsg">Aguarde...</p></div>
+<div class="toast" id="toast"></div>
+
+<!-- ========== LOGIN ========== -->
+<div class="screen active" id="sLogin">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-icon">🔐</div>
+      <h2>Acesso da Empresa</h2>
+      <p>Digite o código fornecido pelo SESMT<br>para liberar os formulários</p>
+      <div class="empresa-tag" id="empresaTag">Empresa: <strong id="empresaNomeTag"></strong></div>
+      <div class="login-field">
+        <label>Código de Acesso</label>
+        <input type="text" id="codigoInput" placeholder="EX: FRIG01" maxlength="12"
+          oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')validarCodigo()">
+      </div>
+      <button class="btn-login" onclick="validarCodigo()">Entrar →</button>
+      <p class="login-hint">Não tem o código? Solicite ao responsável de segurança.</p>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--borda)">
+        <button onclick="showScreen('sPainelLogin')" style="width:100%;background:transparent;border:1px solid rgba(41,128,185,.4);border-radius:7px;padding:12px;color:#5DADE2;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+          🔒 Acesso Interno — SESMT / Engenheiro
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== HOME ========== -->
+<div class="screen" id="sHome">
+  <div class="home-top">
+    <h2>Selecione o tipo de PSR</h2>
+    <span class="badge-emp" id="badgeEmp"></span>
+  </div>
+  <div class="home-body">
+    <div class="psr-card" onclick="abrirForm(0)">
+      <div class="pl"><div class="pi">🔥</div><div><h3>Trabalho a Quente</h3><p>Solda, corte, esmerilhamento, maçarico</p></div></div>
+      <span class="pa">›</span>
+    </div>
+    <div class="psr-card" onclick="abrirForm(1)">
+      <div class="pl"><div class="pi">⚡</div><div><h3>Eletricidade</h3><p>Instalação, manutenção e operação elétrica</p></div></div>
+      <span class="pa">›</span>
+    </div>
+    <div class="psr-card" onclick="abrirForm(2)">
+      <div class="pl"><div class="pi">🏗️</div><div><h3>Trabalho em Altura</h3><p>Acima de 2,0 m — NR-35</p></div></div>
+      <span class="pa">›</span>
+    </div>
+    <div class="psr-card" onclick="abrirForm(3)">
+      <div class="pl"><div class="pi">🏋️</div><div><h3>Içamento de Carga</h3><p>Movimentação e içamento de cargas</p></div></div>
+      <span class="pa">›</span>
+    </div>
+    <div class="psr-card" onclick="abrirForm(4)">
+      <div class="pl"><div class="pi">☣️</div><div><h3>Espaço Confinado — PET</h3><p>Permissão de Entrada e Trabalho — NR-33</p></div></div>
+      <span class="pa">›</span>
+    </div>
+    <button class="btn-sec" onclick="abrirRegistros()">📋 Histórico de registros</button>
+    <button class="btn-sec" onclick="showScreen('sPainelLogin')" style="border-color:rgba(41,128,185,.4);color:#5DADE2">🔒 Painel Interno (SESMT/Eng.)</button>
+    <button class="btn-logout" onclick="logout()">↩ Sair / Trocar empresa</button>
+  </div>
+</div>
+
+<!-- ========== FORM ========== -->
+<div class="screen" id="sForm">
+  <div class="form-header">
+    <button class="btn-back" onclick="irHome()">‹</button>
+    <div><div class="fh-title" id="fhTitle"></div><div class="fh-sub" id="fhSub"></div></div>
+  </div>
+  <div class="form-body" id="formBody"></div>
+</div>
+
+<!-- ========== REGISTROS ========== -->
+<div class="screen" id="sReg">
+  <div class="form-header">
+    <button class="btn-back" onclick="irHome()">‹</button>
+    <div><div class="fh-title">Histórico de PSRs</div><div class="fh-sub" id="regCount"></div></div>
+  </div>
+  <div class="reg-body" id="regBody"></div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" multiple capture="environment" style="display:none">
+
+<!-- ========== LOGIN PAINEL INTERNO ========== -->
+<div class="screen" id="sPainelLogin">
+  <div class="painel-login-wrap">
+    <div class="painel-card">
+      <div style="font-size:40px;text-align:center;margin-bottom:14px">🔒</div>
+      <h2>Painel Interno</h2>
+      <p class="sub">Acesso restrito — Ad'oro S/A</p>
+      <div class="role-opts">
+        <button class="role-btn active" id="rb_sesmt" onclick="setRole('SESMT')">👷 SESMT</button>
+        <button class="role-btn" id="rb_eng" onclick="setRole('ENG')">🔧 Engenheiro</button>
+      </div>
+      <div class="login-field">
+        <label>Senha</label>
+        <input type="password" id="painelSenha" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginPainel()">
+      </div>
+      <button class="btn-login" style="background:var(--azul)" onclick="loginPainel()">Entrar →</button>
+      <p class="login-hint" style="margin-top:14px;cursor:pointer;color:var(--muted)" onclick="irHome()">← Voltar ao app</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAINEL LISTA PSRs ========== -->
+<div class="screen" id="sPainel">
+  <div class="painel-header">
+    <button class="btn-back" onclick="showScreen('sPainelLogin')">‹</button>
+    <div style="flex:1">
+      <div class="fh-title" id="painelTitleBar">Painel</div>
+      <div class="fh-sub" id="painelSubBar"></div>
+    </div>
+    <button class="btn-logout" style="margin:0;padding:6px 10px;font-size:11px" onclick="logoutPainel()">Sair</button>
+  </div>
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" id="tab_pend" onclick="setTab('pend')">Pendentes<span class="tab-count" id="cnt_pend">0</span></button>
+    <button class="tab-btn" id="tab_lib" onclick="setTab('lib')">Liberadas<span class="tab-count" id="cnt_lib" style="background:var(--verde)">0</span></button>
+    <button class="tab-btn" id="tab_rep" onclick="setTab('rep')">Reprovadas<span class="tab-count" id="cnt_rep">0</span></button>
+  </div>
+  <div class="painel-body" id="painelBody"></div>
+</div>
+
+<!-- ========== REVISÃO PSR ========== -->
+<div class="screen" id="sRevisao">
+  <div class="painel-header">
+    <button class="btn-back" onclick="showScreen('sPainel')">‹</button>
+    <div><div class="fh-title" id="revTitle">Revisão da PSR</div><div class="fh-sub" id="revSub"></div></div>
+  </div>
+  <div class="painel-body" id="revBody"></div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURAÇÃO — Cole aqui a URL do seu Google Apps Script
+// ============================================================
+const SHEETS_URL = 'SUA_URL_AQUI'; // Ex: https://script.google.com/macros/s/XXXXX/exec
+
+// ============================================================
+// EMPRESAS AUTORIZADAS
+// Adicione/remova conforme necessário
+// ============================================================
+const EMPRESAS = {
+  'MANUT01': 'Manutenção Geral Ltda',
+  'FRIG02':  'Frigotech Serviços',
+  'ELEC03':  'Eletro Norte',
+  'CIVIL04': 'Construtora Alfa',
+  'DEMO':    'Demonstração (Teste)'
+  // Adicione mais empresas aqui
+};
+
+// ============================================================
+// DADOS
+// ============================================================
+const RISCOS = [
+  'Queda de pessoas ou objetos','Prensamento (atenção especial para as mãos)',
+  'Quebra de equipamentos / ferramentas','Contato com superfície/substância quente ou fria',
+  'Choque elétrico','Projeção de objetos / fragmentos',
+  'Contato com superfície cortante, abrasivo ou perfurante','Exposição a ruído',
+  'Falta de iluminação','Escorregamento / derrapagem',
+  'Transbordo / vazamento / derramamento','Trabalho em altura',
+  'Contato ou reação com produto químico','Movimento / posição antiergonômica',
+  'Esforço individual acima de 23 kg','Outros',
+  'Exposição a gases','Exposição à umidade','Exposição à poeira','Incêndio / explosão',
+  'Interferência com outras equipes','Condições físicas e psicológicas inadequadas','Outros','Outros'
+];
+
+const EPIS = [
+  'Equipamentos de Combate a Incêndio (Extintores, etc)','Isolamento da área',
+  'Proteção auditiva','Kit solda (máscara, respirador, vestimenta de raspa, biombo)',
+  'Cinto de segurança tipo paraquedista','Bloqueio de energias (Cadeado e cartão de identificação)',
+  'Kit Eletricista (Calçado de seg., capacete e vestimenta)','Óculos de segurança',
+  'Capacete Completo','Creme protetor','Máscara produtos químicos com respirador',
+  'Vestimenta impermeável de corpo inteiro','Luvas Alta Tensão + Cobertura','Macacão Tyvek',
+  'Protetor Facial','Luva','Óculos Amplavisão','Plataforma Elevatória',
+  'Calçado de segurança','Botas de Borracha/PVC','Máscara C/Ar Mandado','Trava Quedas','Item 23','Outros'
+];
+
+const MEDIDAS = {
+  0: ['A área está delimitada, sinalizada e isolada evitando-se assim a propagação da radiação e fagulhas?','Os aparelhos oxi-acetilênicos foram inspecionados, visando a detecção de vazamentos em conexões, acessórios e mangueiras?','As mangueiras dos aparelhos oxi-acetilênicos estão sem rachaduras e presas por abraçadeiras?','Os equipamentos utilizados estão em boas condições de uso? Sem emendas elétricas: tomadas com plug e aterradas?','Há atividades simultâneas como espaço confinado, trabalho em altura e inflamáveis? Os requisitos da NR-33, 35 e 20 foram atendidos?','Os cabos e flanões dos equipamentos estão secos, livres de óleos e graxas e outros produtos líquidos?','Os cabos estendidos no chão estão devidamente protegidos?','O maçarico possui válvulas corta fogo na saída dos reguladores de pressão e nas entradas dos maçaricos oxicombustíveis?','Os equipamentos de combate a incêndio foram inspecionados e estão posicionados para uso?','A supervisão e equipe de emergência estão cientes da atividade?'],
+  1: ['A área está delimitada, sinalizada e isolada com barreiras físicas?','Os trabalhadores são habilitados, autorizados e treinados de acordo com a NR-10?','Os desligamentos e bloqueios necessários foram realizados com o impedimento de reenergização?','Há constatação da ausência de tensão?','Os elementos energizados existentes na zona controlada possuem proteção?','As ferramentas possuem isolamentos adequados às tensões envolvidas?','As instalações elétricas possuem esquemas uni filares atualizados com as especificações do sistema de aterramento e dispositivos de proteção?','A empresa constitui e mantém o Prontuário de Instalações Elétricas?','A iluminação para atividades em instalações elétricas está adequada?','Existe registro de entrada e saída do local energizado?'],
+  '1r': ['Foi feita a retirada das ferramentas, utensílios e equipamentos?','Os trabalhadores não envolvidos no processo de reenergização foram retirados da zona controlada?','Houve remoção do aterramento temporário, da equipotencialização e proteções adicionais?','Houve remoção da sinalização de impedimento de reenergização?'],
+  2: ['A atividade será executada por mais de uma pessoa? Se não, incluir porque na observação.','Os empregados envolvidos foram treinados, de acordo com a NR-35, para executar trabalho em altura?','Foi disponibilizado cintos de segurança tipo paraquedista com talabarte duplo para todos os empregados?','As estruturas de acesso (andaime, PTA, escadas, etc.) e equipamentos utilizados foram inspecionados e estão liberados para utilização?','Caso existam atividades com eletricidade, inflamável ou espaço confinado, os requisitos da NR-10, NR-20 e NR-33 foram atendidos?','Os sistemas e pontos de ancoragem estabelecidos são adequados, conforme definido pela NR-35?','A supervisão e equipe de emergência estão cientes da atividade?','As interferências existentes na área de trabalho ou em seu entorno, foram neutralizadas? (Linhas energizadas, inflamáveis, pedestres, etc.)','O ASO dos funcionários que irão executar trabalho em altura estão devidamente atualizados e com exames específicos para a atividade?','As condições meteorológicas são favoráveis? (Condições desfavoráveis: Ventos fortes, chuvas e descargas atmosféricas)'],
+  3: ['Foi observado o peso limite de carregamento do equipamento?','Os empregados envolvidos foram treinados na operação do equipamento, amarração e movimentação de cargas?','A área foi isolada e sinalizada?','Foi disponibilizado um sistema de comunicação adequado entre os envolvidos e a equipe de emergência?','Para içamento de cargas com mais de 5 toneladas e 20 metros de movimentação, foi elaborado o Plano de Rigging?','O equipamento (par / guindaste, giro / roletes e outros) está posicionado a uma escavação?','O acesso aos dispositivos de governo é fácil e seguro?','Os acessórios de amarração de carga (Cintas, correntes e cabos) foram inspecionados e aprovados?','As condições meteorológicas são favoráveis? (Condições desfavoráveis: Ventos fortes, chuvas e descargas atmosféricas)'],
+  'pet': ['1. Isolamento','2. Teste Inicial da Atmosfera','3. Bloqueios, travamentos e etiquetagens','4. Purga e/ou lavagem','5. Ventilação/exaustão — tipo, equipamento e tempo','6. Teste após ventilação e isolamento','7. Iluminação Geral','8. Procedimento de Comunicação']
+};
+
+const PSR_CFG = [
+  {title:'Trabalho a Quente',icon:'🔥',norma:'NR-34 / NR-35 / NR-20'},
+  {title:'Eletricidade',icon:'⚡',norma:'NR-10 / ABNT NBR 5410',reen:true},
+  {title:'Trabalho em Altura',icon:'🏗️',norma:'NR-35 / NR-18',tel:true},
+  {title:'Içamento de Carga',icon:'🏋️',norma:'NR-11 / NBR 11900'},
+  {title:'Espaço Confinado — PET',icon:'☣️',norma:'NR-33',pet:true}
+];
+
+// ============================================================
+// ESTADO
+// ============================================================
+let empresaAtual = null;
+let codigoAtual = null;
+let psrAtual = null;
+let fotos = [];
+let riscosSel = {};
+let episSel = {};
+let medidasSel = {};
+let membros = [];
+let canvases = {};
+let execSel = 'Contratados';
+let registros = JSON.parse(localStorage.getItem('psr_v3') || '[]');
+let psrNumLocal = parseInt(localStorage.getItem('psr_num') || '0');
+
+// ============================================================
+// LOGIN
+// ============================================================
+function validarCodigo() {
+  const cod = document.getElementById('codigoInput').value.trim().toUpperCase();
+  if (!cod) { toast('Digite o código de acesso', true); return; }
+  
+  const empresa = EMPRESAS[cod];
+  if (!empresa) {
+    toast('❌ Código inválido. Solicite ao SESMT.', true);
+    document.getElementById('codigoInput').style.borderColor = '#e74c3c';
+    setTimeout(() => document.getElementById('codigoInput').style.borderColor = '', 2000);
+    return;
+  }
+  
+  empresaAtual = empresa;
+  codigoAtual = cod;
+  document.getElementById('badgeEmp').textContent = empresa;
+  toast('✅ Bem-vindo, ' + empresa);
+  showScreen('sHome');
+}
+
+function logout() {
+  empresaAtual = null; codigoAtual = null;
+  document.getElementById('codigoInput').value = '';
+  document.getElementById('empresaTag').style.display = 'none';
+  showScreen('sLogin');
+}
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function irHome() { showScreen('sHome'); }
+
+function abrirForm(idx) {
+  psrAtual = idx;
+  fotos = []; riscosSel = {}; episSel = {}; medidasSel = {};
+  membros = []; canvases = {}; execSel = 'Contratados';
+  const cfg = PSR_CFG[idx];
+  document.getElementById('fhTitle').textContent = 'PSR — ' + cfg.title;
+  document.getElementById('fhSub').textContent = cfg.norma;
+  buildForm(idx);
+  showScreen('sForm');
+}
+
+function abrirRegistros() { renderRegistros(); showScreen('sReg'); }
+
+// ============================================================
+// BUILD FORM
+// ============================================================
+function buildForm(idx) {
+  const cfg = PSR_CFG[idx];
+  const now = new Date();
+  const ds = now.toISOString().split('T')[0];
+  const ts = now.toTimeString().slice(0,5);
+  let html = '';
+
+  // PARTE I
+  html += sec('Parte I — Descrição da Atividade');
+  html += `<div class="sec-bd">`;
+  html += fld('Tarefa','textarea','tarefa','Descreva a tarefa a ser executada...',true);
+  html += `<div class="field"><label>Executante</label><div class="exec-opts">
+    <button class="exec-btn" id="eb0" onclick="setExec('ADORO S/A',0)">ADORO S/A</button>
+    <button class="exec-btn active" id="eb1" onclick="setExec('Contratados',1)">Contratados</button>
+  </div></div>`;
+  html += fld('Local da realização da atividade','text','local','Ex: Câmara fria 02, Setor de abate...',true);
+  html += fld('Máquinas/Equipamentos a Serem Utilizados','textarea','maquinas','Liste os equipamentos...');
+  html += `<div class="r2">
+    <div class="field"><label>Início da atividade</label><input type="datetime-local" id="inicio" value="${ds}T${ts}"></div>
+    <div class="field"><label>Previsão de Término</label><input type="datetime-local" id="termino"></div>
+  </div>`;
+  
+  if (cfg.pet) {
+    html += `<div class="r2">
+      <div class="field"><label>Espaço Confinado Nº</label><input type="text" id="espNum"></div>
+      <div class="field"><label>Vigia</label><input type="text" id="vigia" placeholder="Nome do vigia"></div>
+    </div>`;
+    html += `<div class="r2">
+      <div class="field"><label>Supervisor de Entrada</label><input type="text" id="supervisor"></div>
+      <div class="field"><label>Equipe de Resgate</label><input type="text" id="resgate"></div>
+    </div>`;
+    html += fld('Trabalhadores Autorizados','text','trabAutorizados','Nomes dos trabalhadores autorizados');
+  }
+  html += `</div>`;
+
+  // PET tem fluxo diferente
+  if (cfg.pet) {
+    html += buildPET();
+  } else {
+    // PARTE II
+    html += sec('Parte II — Riscos Envolvidos');
+    html += `<div class="sec-bd"><div class="grid2" id="riscosGrid">`;
+    RISCOS.forEach((r,i) => html += `<div class="chk-item r" id="ri${i}" onclick="tRisco(${i})"><div class="chkbox" id="rb${i}"></div><span>${i+1}. ${r}</span></div>`);
+    html += `</div></div>`;
+
+    // PARTE III
+    html += sec('Parte III — Medidas de Segurança');
+    html += `<div class="sec-bd">`;
+    html += `<p style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">EPIs e EPCs Necessários</p>`;
+    html += `<div class="grid2" id="epiGrid">`;
+    EPIS.forEach((e,i) => {
+      let label = e;
+      if(i===22 && idx===2) label='Andaimes';
+      if(i===22 && idx===0) label='Vigia trabalho a quente';
+      html += `<div class="chk-item e" id="ei${i}" onclick="tEpi(${i})"><div class="chkbox" id="eb${i}"></div><span>${i+1}. ${label}</span></div>`;
+    });
+    html += `</div>`;
+    html += `<p style="font-size:11px;color:var(--muted);margin:14px 0 10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Medidas de Segurança Necessárias</p>`;
+    (MEDIDAS[idx]||[]).forEach((m,i) => html += medRow(m,i,'m'));
+    if (cfg.reen) {
+      html += `<p style="font-size:11px;color:var(--amarelo);margin:14px 0 10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">⚡ Reenergização</p>`;
+      (MEDIDAS['1r']||[]).forEach((m,i) => html += medRow(m,i,'r'));
+    }
+    html += `</div>`;
+
+    // ENCERRAMENTO
+    html += sec('Encerramento da Atividade');
+    html += `<div class="sec-bd">`;
+    ['Local organizado e resíduos descartados','Riscos adicionais neutralizados'].forEach((item,i) => {
+      html += `<div class="enc-row"><span>${item}</span><div class="enc-btns">
+        <button class="sn sim" id="es${i}" onclick="setEnc(${i},'sim')">SIM</button>
+        <button class="sn nao" id="en${i}" onclick="setEnc(${i},'nao')">NÃO</button>
+      </div></div>`;
+    });
+    html += `</div>`;
+  }
+
+  // FOTOS
+  html += sec('📸 Fotos do Local / Serviço');
+  html += `<div class="sec-bd">
+    <div class="photo-zone" onclick="document.getElementById('fileInput').click()">
+      <div style="font-size:32px;opacity:.35">📷</div>
+      <p style="font-size:13px;color:var(--muted);margin-top:6px">Toque para adicionar fotos</p>
+      <small style="font-size:11px;color:var(--muted);opacity:.5">Câmera ou galeria • máx. 6 fotos</small>
+    </div>
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>`;
+
+  // PARTE IV — EQUIPE + ASSINATURA
+  html += sec('Parte IV — Equipe e Assinaturas');
+  html += `<div class="sec-bd">
+    <div id="membrosContainer"></div>
+    <button class="add-membro" onclick="addMembro()">+ Adicionar integrante</button>
+  </div>`;
+
+  // PARTE V
+  html += sec('Parte V — Liberação da Atividade');
+  html += `<div class="sec-bd">`;
+  const gesLbl = idx===2?'GESTOR DE MANUTENÇÃO PELO SERVIÇO':'GESTOR DE MANUTENÇÃO E/OU GESTOR DE ENGENHARIA OBRAS';
+  html += `<div class="lib-blk"><div class="lib-title">${gesLbl}</div>`;
+  html += `<div class="r2"><div class="field"><label>Nome Legível</label><input type="text" id="gestNome"></div><div class="field"><label>Função</label><input type="text" id="gestFunc"></div></div>`;
+  if (cfg.tel) html += fld('Telefone para Contato','tel','gestTel','(00) 00000-0000');
+  html += `</div>`;
+  html += `<div class="lib-blk"><div class="lib-title">RESPONSÁVEL PELO SERVIÇO</div>`;
+  html += `<div class="r2"><div class="field"><label>Nome Legível</label><input type="text" id="respNome"></div><div class="field"><label>Função</label><input type="text" id="respFunc"></div></div>`;
+  if (cfg.tel) html += fld('Telefone para Contato','tel','respTel','(00) 00000-0000');
+  html += `</div></div>`;
+
+  // PARTE VI
+  html += sec('Parte VI — Auditoria SESMT');
+  html += `<div class="sec-bd">
+    <div class="field"><label>Observação da Auditoria</label><textarea id="audObs"></textarea></div>
+    <div class="r2">
+      <div class="field"><label>Responsável pela Auditoria</label><input type="text" id="audResp"></div>
+      <div class="field"><label>Data</label><input type="date" id="audData" value="${ds}"></div>
+    </div>
+  </div>`;
+
+  // STATUS ENVIO
+  html += `<div class="status-bar" id="statusBar">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-txt" id="statusTxt"></span>
+  </div>`;
+
+  html += `<button class="btn-primary verde" onclick="enviarNuvem()">☁️ Salvar e Enviar para Nuvem</button>`;
+  html += `<button class="btn-outline" onclick="salvarLocal()">💾 Salvar só no dispositivo</button>`;
+  html += `<button class="btn-outline" onclick="gerarPDF()">📄 Gerar PDF</button>`;
+  html += `<div style="height:30px"></div>`;
+
+  document.getElementById('formBody').innerHTML = html;
+  document.getElementById('fileInput').onchange = handleFotos;
+
+  // Adicionar primeiro membro
+  addMembro();
+}
+
+function buildPET() {
+  let html = '';
+  html += sec('Procedimentos — Antes da Entrada (NR-33)');
+  html += `<div class="sec-bd"><div class="pet-nota">⚠️ Todos os procedimentos abaixo devem ser completados antes da entrada no espaço confinado.</div>`;
+  MEDIDAS.pet.forEach((m,i) => html += medRow(m,i,'pet'));
+  html += `<p style="font-size:11px;color:var(--muted);margin:14px 0 8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Testes Atmosféricos</p>`;
+  html += `<table class="atm-t">
+    <tr><th>Parâmetro</th><th>Horário</th><th>% O₂</th><th>% LIE</th><th>Ppm</th><th>Mg/m³</th><th>Assin.</th></tr>
+    ${['Antes da entrada','Após ventilação','Durante (1)'].map((l,n) => `
+    <tr><td class="atm-lbl">${l}</td>
+      <td><input type="time" id="atm${n}h"></td>
+      <td><input type="text" id="atm${n}o" placeholder="—"></td>
+      <td><input type="text" id="atm${n}l" placeholder="—"></td>
+      <td><input type="text" id="atm${n}p" placeholder="—"></td>
+      <td><input type="text" id="atm${n}m" placeholder="—"></td>
+      <td><input type="text" id="atm${n}a" placeholder="Nome"></td>
+    </tr>`).join('')}
+  </table>
+  <p style="font-size:10px;color:var(--muted);margin-top:6px">O₂ &gt; 19,5% e &lt; 23% &nbsp;|&nbsp; LIE &lt; 10%</p></div>`;
+
+  html += sec('EPIs e EPCs Necessários');
+  html += `<div class="sec-bd"><div class="grid2" id="epiGrid">`;
+  EPIS.forEach((e,i) => html += `<div class="chk-item e" id="ei${i}" onclick="tEpi(${i})"><div class="chkbox" id="eb${i}"></div><span>${i+1}. ${e}</span></div>`);
+  html += `</div></div>`;
+  return html;
+}
+
+function sec(t) { return `<div class="sec-hd">${t}</div>`; }
+function fld(lbl, tipo, id, ph='', req=false) {
+  const tag = tipo==='textarea'?`<textarea id="${id}" placeholder="${ph}"></textarea>`:`<input type="${tipo}" id="${id}" placeholder="${ph}">`;
+  return `<div class="field"><label>${lbl}${req?'<span class="req"> *</span>':''}</label>${tag}</div>`;
+}
+function medRow(txt, i, pref) {
+  return `<div class="med-row"><div class="med-txt">${txt}</div>
+    <div class="med-ctrl">
+      <button class="sn sim" id="${pref}s${i}" onclick="setMed('${pref}',${i},'sim')">SIM</button>
+      <button class="sn nao" id="${pref}n${i}" onclick="setMed('${pref}',${i},'nao')">NÃO</button>
+      <button class="sn na" id="${pref}a${i}" onclick="setMed('${pref}',${i},'na')">N/A</button>
+      <input class="med-obs" type="text" id="${pref}o${i}" placeholder="Observação...">
+    </div></div>`;
+}
+
+// ============================================================
+// INTERAÇÕES DO FORM
+// ============================================================
+function setExec(v, idx) {
+  execSel = v;
+  document.querySelectorAll('.exec-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+function tRisco(i) {
+  riscosSel[i]=!riscosSel[i];
+  document.getElementById(`ri${i}`).classList.toggle('checked', riscosSel[i]);
+  const b=document.getElementById(`rb${i}`); b.textContent=riscosSel[i]?'✓':'';
+}
+function tEpi(i) {
+  episSel[i]=!episSel[i];
+  document.getElementById(`ei${i}`).classList.toggle('checked', episSel[i]);
+  const b=document.getElementById(`eb${i}`); b.textContent=episSel[i]?'✓':'';
+}
+function setMed(p, i, v) {
+  const k=`${p}_${i}`; medidasSel[k]=v;
+  ['s','n','a'].forEach(x => {
+    const el=document.getElementById(`${p}${x}${i}`);
+    if(el) { el.classList.remove('on'); if((x==='s'&&v==='sim')||(x==='n'&&v==='nao')||(x==='a'&&v==='na')) el.classList.add('on'); }
+  });
+}
+function setEnc(i, v) {
+  [`es${i}`,'sim',`en${i}`,'nao'].forEach((_,j,a)=>{
+    if(j%2!==0) return;
+    const el=document.getElementById(a[j]);
+    if(el) { el.classList.remove('on'); if((a[j+1]===v)) el.classList.add('on'); }
+  });
+  const s=document.getElementById(`es${i}`), n=document.getElementById(`en${i}`);
+  if(s) { s.classList.remove('on'); n.classList.remove('on'); }
+  if(v==='sim'&&s) s.classList.add('on');
+  if(v==='nao'&&n) n.classList.add('on');
+}
+
+// ============================================================
+// MEMBROS + ASSINATURA
+// ============================================================
+function addMembro() {
+  const id = Date.now() + Math.random();
+  membros.push({ id, nome:'', func:'', emp: empresaAtual||'', assinatura:null, assinado:false });
+  renderMembros();
+}
+
+function renderMembros() {
+  const c = document.getElementById('membrosContainer');
+  if(!c) return;
+  c.innerHTML = membros.map((m, idx) => `
+    <div class="membro-card" id="mc${m.id}">
+      <div class="membro-num">INTEGRANTE ${idx+1}</div>
+      ${membros.length>1?`<button class="rm-btn" onclick="remMembro(${m.id})">✕</button>`:''}
+      <div class="membro-fields">
+        <div class="r2" style="margin-bottom:10px">
+          <div class="field"><label>Nome Completo <span class="req">*</span></label>
+            <input type="text" id="mn${m.id}" placeholder="Nome" value="${m.nome}" onchange="updateMembro(${m.id},'nome',this.value)"></div>
+          <div class="field"><label>Função</label>
+            <input type="text" id="mf${m.id}" placeholder="Cargo" value="${m.func}" onchange="updateMembro(${m.id},'func',this.value)"></div>
+        </div>
+        <div class="field" style="margin-bottom:10px"><label>Empresa</label>
+          <input type="text" id="me${m.id}" value="${m.emp||empresaAtual||''}" onchange="updateMembro(${m.id},'emp',this.value)"></div>
+        <div class="field">
+          <label>Assinatura — assine com o dedo na área abaixo</label>
+          ${m.assinado && m.assinatura ? `
+            <div class="sign-saved-wrap" style="display:block">
+              <img src="${m.assinatura}" alt="Assinatura">
+              <div class="sign-ok-badge">✅ Assinatura registrada</div>
+              <button class="btn-sign-clear" style="width:100%;margin-top:6px" onclick="resetSign(${m.id})">↩ Refazer assinatura</button>
+            </div>` : `
+            <div class="sign-wrap">
+              <canvas class="sign-canvas" id="cv${m.id}" width="600" height="180"></canvas>
+              <div class="sign-label" id="sl${m.id}">✍️ Assine aqui com o dedo</div>
+            </div>
+            <div class="sign-actions">
+              <button class="btn-sign-clear" onclick="clearCanvas(${m.id})">🗑 Limpar</button>
+              <button class="btn-sign-ok" onclick="saveSign(${m.id})">✅ Confirmar assinatura</button>
+            </div>`}
+        </div>
+      </div>
+    </div>`).join('');
+
+  // Inicializar canvas para membros não assinados
+  membros.forEach(m => { if (!m.assinado) initCanvas(m.id); });
+}
+
+function initCanvas(id) {
+  const canvas = document.getElementById(`cv${id}`);
+  if (!canvas) return;
+  const label = document.getElementById(`sl${id}`);
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#1a1a2e';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  let drawing = false, hasDrawn = false;
+
+  const getPos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / r.width;
+    const scaleY = canvas.height / r.height;
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - r.left) * scaleX, y: (src.clientY - r.top) * scaleY };
+  };
+
+  canvas.addEventListener('mousedown', e => { drawing=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+  canvas.addEventListener('mousemove', e => { if(!drawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); if(!hasDrawn){hasDrawn=true;if(label)label.style.opacity='0';} });
+  canvas.addEventListener('mouseup', () => drawing=false);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }, {passive:false});
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); if(!drawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); if(!hasDrawn){hasDrawn=true;if(label)label.style.opacity='0';} }, {passive:false});
+  canvas.addEventListener('touchend', () => drawing=false);
+
+  canvases[id] = { ctx, hasDrawn: () => hasDrawn };
+}
+
+function clearCanvas(id) {
+  const canvas = document.getElementById(`cv${id}`);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const label = document.getElementById(`sl${id}`);
+  if (label) label.style.opacity = '1';
+  if (canvases[id]) canvases[id] = { ...canvases[id] };
+  initCanvas(id);
+}
+
+function saveSign(id) {
+  const canvas = document.getElementById(`cv${id}`);
+  if (!canvas) return;
+  const cv = canvases[id];
+  if (cv && !cv.hasDrawn()) { toast('Assine antes de confirmar', true); return; }
+  const dataUrl = canvas.toDataURL('image/png');
+  const m = membros.find(x => x.id === id);
+  if (m) { m.assinatura = dataUrl; m.assinado = true; }
+  renderMembros();
+  toast('✅ Assinatura registrada!');
+}
+
+function resetSign(id) {
+  const m = membros.find(x => x.id === id);
+  if (m) { m.assinatura = null; m.assinado = false; }
+  renderMembros();
+}
+
+function remMembro(id) {
+  membros = membros.filter(m => m.id !== id);
+  renderMembros();
+}
+
+function updateMembro(id, field, val) {
+  const m = membros.find(x => x.id === id);
+  if (m) m[field] = val;
+}
+
+// ============================================================
+// FOTOS
+// ============================================================
+function handleFotos(e) {
+  Array.from(e.target.files).slice(0, 6-fotos.length).forEach(f => {
+    const r = new FileReader();
+    r.onload = ev => { fotos.push(ev.target.result); renderFotos(); };
+    r.readAsDataURL(f);
+  });
+  e.target.value='';
+}
+function renderFotos() {
+  const g=document.getElementById('photoGrid');
+  if(!g) return;
+  g.innerHTML = fotos.map((s,i) => `<div class="photo-wrap"><img src="${s}"><button class="photo-del" onclick="delFoto(${i})">✕</button></div>`).join('');
+}
+function delFoto(i) { fotos.splice(i,1); renderFotos(); }
+
+// ============================================================
+// COLETAR DADOS
+// ============================================================
+function gv(id) { return document.getElementById(id)?.value||''; }
+
+function coletarDados() {
+  const cfg = PSR_CFG[psrAtual];
+
+  // Sincronizar valores dos inputs antes de coletar
+  membros.forEach(m => {
+    m.nome = document.getElementById(`mn${m.id}`)?.value || m.nome;
+    m.func = document.getElementById(`mf${m.id}`)?.value || m.func;
+    m.emp  = document.getElementById(`me${m.id}`)?.value || m.emp;
+  });
+
+  const getMed = (pref, arr) => arr.map((texto,i) => ({
+    texto, val: medidasSel[`${pref}_${i}`]||'', obs: gv(`${pref}o${i}`)
+  }));
+
+  const d = {
+    tipo: cfg.title, icon: cfg.icon, norma: cfg.norma,
+    codigoEmpresa: codigoAtual, nomeEmpresa: empresaAtual,
+    executante: execSel,
+    tarefa: gv('tarefa'), local: gv('local'),
+    maquinas: gv('maquinas'), inicio: gv('inicio'), termino: gv('termino'),
+    riscos: RISCOS.map((t,i) => ({texto:t, checked:!!riscosSel[i]})),
+    epis: EPIS.map((t,i) => ({texto:t, checked:!!episSel[i]})),
+    medidas: getMed('m', MEDIDAS[psrAtual]||[]),
+    equipe: membros.map(m => ({nome:m.nome, func:m.func, emp:m.emp, assinatura:m.assinatura||null})),
+    gestorNome: gv('gestNome'), gestorFunc: gv('gestFunc'),
+    respNome: gv('respNome'), respFunc: gv('respFunc'),
+    audObs: gv('audObs'), audResp: gv('audResp'), audData: gv('audData'),
+    fotos: [...fotos],
+    id: Date.now(), criadoEm: new Date().toISOString()
+  };
+
+  if (cfg.reen) d.medidasReen = getMed('r', MEDIDAS['1r']||[]);
+  if (cfg.tel) { d.gestorTel = gv('gestTel'); d.respTel = gv('respTel'); }
+  if (cfg.pet) {
+    d.espNum=gv('espNum'); d.vigia=gv('vigia');
+    d.supervisor=gv('supervisor'); d.resgate=gv('resgate');
+    d.trabAutorizados=gv('trabAutorizados');
+    d.medidasPET = getMed('pet', MEDIDAS.pet);
+    d.atm = [0,1,2].map(n => ({hor:gv(`atm${n}h`),o2:gv(`atm${n}o`),lie:gv(`atm${n}l`),ppm:gv(`atm${n}p`),mg:gv(`atm${n}m`),ass:gv(`atm${n}a`)}));
+  }
+
+  // Número sequencial
+  psrNumLocal++;
+  localStorage.setItem('psr_num', psrNumLocal);
+  d.numPSR = String(psrNumLocal).padStart(5,'0');
+
+  return d;
+}
+
+function validar() {
+  if (!gv('tarefa').trim()) { toast('⚠️ Preencha a Tarefa', true); return false; }
+  if (!gv('local').trim()) { toast('⚠️ Preencha o Local', true); return false; }
+  const semNome = membros.find(m => !m.nome.trim());
+  if (semNome) { toast('⚠️ Preencha o nome de todos os integrantes', true); return false; }
+  const semSign = membros.find(m => !m.assinado);
+  if (semSign) { toast('⚠️ Todos os integrantes precisam assinar', true); return false; }
+  return true;
+}
+
+// ============================================================
+// ENVIAR PARA NUVEM
+// ============================================================
+async function enviarNuvem() {
+  if (!validar()) return;
+  const d = coletarDados();
+
+  const bar = document.getElementById('statusBar');
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusTxt');
+  bar.style.display='flex'; dot.className='status-dot loading'; txt.textContent='Enviando para a nuvem...';
+
+  setOverlay(true, 'Enviando PSR...');
+
+  try {
+    // Enviar sem as fotos grandes primeiro (metadados)
+    const payload = { ...d, fotos: d.fotos.map((_,i) => `foto_${i+1}`) };
+
+    if (SHEETS_URL && SHEETS_URL !== 'SUA_URL_AQUI') {
+      const form = new FormData();
+      form.append('data', JSON.stringify(payload));
+      await fetch(SHEETS_URL, {
+        method: 'POST',
+        body: form,
+        mode: 'no-cors'
+      });
+      dot.className='status-dot ok';
+      txt.textContent = `✅ PSR nº ${d.numPSR} registrada na nuvem!`;
+    } else {
+      // URL não configurada — salvar só local
+      dot.className='status-dot ok';
+      txt.textContent = `💾 URL da nuvem não configurada. Salvo localmente.`;
+    }
+
+    // Salvar local de qualquer forma
+    registros.unshift(d);
+    localStorage.setItem('psr_v3', JSON.stringify(registros));
+    toast(`✅ PSR nº ${d.numPSR} salva!`);
+    setTimeout(irHome, 2000);
+  } catch(err) {
+    dot.className='status-dot err';
+    txt.textContent = '❌ Erro ao enviar. Salvo localmente.';
+    registros.unshift(d);
+    localStorage.setItem('psr_v3', JSON.stringify(registros));
+    toast('Salvo localmente (sem conexão)', true);
+  } finally {
+    setOverlay(false);
+  }
+}
+
+function salvarLocal() {
+  if (!validar()) return;
+  const d = coletarDados();
+  registros.unshift(d);
+  localStorage.setItem('psr_v3', JSON.stringify(registros));
+  toast(`💾 PSR nº ${d.numPSR} salva no dispositivo`);
+  setTimeout(irHome, 1500);
+}
+
+function setOverlay(show, msg='') {
+  document.getElementById('overlay').classList.toggle('show', show);
+  if(msg) document.getElementById('overlayMsg').textContent = msg;
+}
+
+// ============================================================
+// PDF
+// ============================================================
+async function gerarPDF(dadosExt) {
+  if (!dadosExt && !validar()) return;
+  const d = dadosExt || coletarDados();
+  setOverlay(true, 'Gerando PDF...');
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const ML=14, MR=196, W=182;
+    let y=10;
+    const rgb=[192,57,43];
+
+    const checkPage = (n=20) => { if(y+n>285){doc.addPage();y=14;} };
+
+    // CABEÇALHO
+    doc.setFillColor(...rgb); doc.rect(0,0,210,26,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(255,255,255);
+    doc.text('PSR — PERMISSÃO DE SERVIÇO DE RISCO', 105,9,{align:'center'});
+    doc.setFontSize(11);
+    doc.text(`${d.icon}  ${d.tipo.toUpperCase()}`, 105,16,{align:'center'});
+    doc.setFontSize(7.5); doc.setTextColor(255,200,200);
+    doc.text(`Ad'oro S/A  |  ${d.norma}  |  Nº PSR: ${d.numPSR||'—'}  |  ${new Date(d.criadoEm).toLocaleString('pt-BR')}`, 105,22,{align:'center'});
+    doc.setFontSize(8); doc.setTextColor(255,240,180);
+    doc.text(`Empresa: ${d.nomeEmpresa||'—'}  |  Código: ${d.codigoEmpresa||'—'}`, 105,26.5,{align:'center'});
+    y=34;
+
+    const secH = (t) => {
+      checkPage(12);
+      doc.setFillColor(...rgb); doc.rect(ML,y,W,6,'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(255,255,255);
+      doc.text(t.toUpperCase(), ML+2, y+4.2); y+=8;
+    };
+
+    const fl = (lbl, val, x, w) => {
+      doc.setFont('helvetica','bold'); doc.setFontSize(6.5); doc.setTextColor(120,120,120);
+      doc.text(lbl.toUpperCase(), x, y);
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(20,20,20);
+      const ls=doc.splitTextToSize(val||'—',w-2);
+      doc.text(ls, x, y+4.5);
+      return ls.length;
+    };
+
+    // P. I
+    secH('Parte I — Descrição da Atividade');
+    let lns=fl('Tarefa',d.tarefa,ML,W); y+=5+lns*4.5;
+    checkPage();
+    fl('Local',d.local,ML,W/2); fl('Executante',d.executante,ML+W/2,W/2); y+=9;
+    if(d.maquinas){checkPage();fl('Máquinas/Equipamentos',d.maquinas,ML,W);y+=9;}
+    fl('Início',d.inicio?.replace('T',' ')||'—',ML,W/3);
+    fl('Previsão de Término',d.termino?.replace('T',' ')||'—',ML+W/3,W/3); y+=9;
+
+    if (PSR_CFG[psrAtual]?.pet) {
+      checkPage();
+      fl('Espaço Confinado Nº',d.espNum,ML,W/4);
+      fl('Vigia',d.vigia,ML+W/4,W/4);
+      fl('Supervisor',d.supervisor,ML+W/2,W/4);
+      fl('Equipe Resgate',d.resgate,ML+3*W/4,W/4); y+=9;
+      fl('Trabalhadores Autorizados',d.trabAutorizados,ML,W); y+=9;
+
+      secH('Procedimentos — Antes da Entrada (NR-33)');
+      (d.medidasPET||[]).forEach(m=>{
+        checkPage(10);
+        const c=m.val==='sim'?[39,174,96]:m.val==='nao'?[192,57,43]:[150,150,150];
+        doc.setFillColor(...c); doc.roundedRect(ML,y,10,5.5,1,1,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(255,255,255);
+        doc.text((m.val||'—').toUpperCase(),ML+1.5,y+3.8);
+        doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(20,20,20);
+        const tl=doc.splitTextToSize(m.texto,W-14);
+        doc.text(tl,ML+12,y+3.8); y+=Math.max(tl.length*4.2,7);
+      });
+
+      // Testes atmosféricos
+      checkPage(30);
+      secH('Testes Atmosféricos');
+      const atmHs=['Parâmetro','Horário','% O₂','% LIE','Ppm','Mg/m³','Assinatura'];
+      const atmWs=[42,20,18,18,18,18,28];
+      let ax=ML;
+      atmHs.forEach((h,i)=>{doc.setFillColor(240,240,240);doc.rect(ax,y,atmWs[i],5.5,'F');doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(80,80,80);doc.text(h,ax+1,y+3.8);ax+=atmWs[i];});
+      y+=5.5;
+      const atmLbls=['Antes da entrada','Após ventilação','Durante (1)'];
+      (d.atm||[]).forEach((a,i)=>{
+        checkPage(7); ax=ML;
+        [atmLbls[i],a.hor,a.o2,a.lie,a.ppm,a.mg,a.ass].forEach((v,j)=>{
+          doc.setFillColor(i%2===0?255:248,i%2===0?255:248,i%2===0?255:250);
+          doc.rect(ax,y,atmWs[j],6,'F');
+          doc.setFont('helvetica',j===0?'bold':'normal');doc.setFontSize(7.5);doc.setTextColor(20,20,20);
+          doc.text(v||'—',ax+1,y+4); ax+=atmWs[j];
+        });
+        y+=6;
+      });
+      y+=4;
+    } else {
+      // RISCOS
+      const marcados=(d.riscos||[]).filter(r=>r.checked).map(r=>r.texto);
+      if(marcados.length){
+        checkPage(20); secH('Parte II — Riscos Envolvidos');
+        const cw=W/2;
+        marcados.forEach((r,i)=>{
+          if(i%2===0&&i>0)y+=5.5; checkPage(7);
+          const cx=i%2===0?ML:ML+cw;
+          doc.setFillColor(...rgb); doc.roundedRect(cx,y-3,4,4,0.5,0.5,'F');
+          doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(20,20,20);
+          doc.text(r,cx+6,y);
+        });
+        y+=7;
+      }
+
+      // EPIS
+      const episM=(d.epis||[]).filter(e=>e.checked).map(e=>e.texto);
+      if(episM.length){
+        checkPage(20); secH('Parte III — EPIs e EPCs Selecionados');
+        episM.forEach((e,i)=>{
+          if(i%2===0&&i>0)y+=5.5; checkPage(7);
+          const cx=i%2===0?ML:ML+W/2;
+          doc.setFillColor(243,156,18); doc.roundedRect(cx,y-3,4,4,0.5,0.5,'F');
+          doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(20,20,20);
+          doc.text(e,cx+6,y);
+        });
+        y+=7;
+      }
+
+      // MEDIDAS
+      checkPage(20); secH('Medidas de Segurança Necessárias');
+      (d.medidas||[]).forEach(m=>{
+        checkPage(10);
+        const c=m.val==='sim'?[39,174,96]:m.val==='nao'?[192,57,43]:[150,150,150];
+        doc.setFillColor(...c); doc.roundedRect(ML,y,10,5.5,1,1,'F');
+        doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(255,255,255);
+        doc.text((m.val||'—').toUpperCase(),ML+1.5,y+3.8);
+        doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(20,20,20);
+        const tl=doc.splitTextToSize(m.texto,W-14);
+        doc.text(tl,ML+12,y+3.8); y+=Math.max(tl.length*4.2,7);
+        if(m.obs){doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor(100,100,100);doc.text('Obs: '+m.obs,ML+12,y);y+=4;}
+      });
+
+      if(d.medidasReen?.length){
+        checkPage(15);
+        doc.setFillColor(211,84,0); doc.rect(ML,y,W,5.5,'F');
+        doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(255,255,255);
+        doc.text('MEDIDAS — REENERGIZAÇÃO',ML+2,y+3.8); y+=7;
+        d.medidasReen.forEach(m=>{
+          checkPage(10);
+          const c=m.val==='sim'?[39,174,96]:m.val==='nao'?[192,57,43]:[150,150,150];
+          doc.setFillColor(...c); doc.roundedRect(ML,y,10,5.5,1,1,'F');
+          doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(255,255,255);
+          doc.text((m.val||'—').toUpperCase(),ML+1.5,y+3.8);
+          doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(20,20,20);
+          const tl=doc.splitTextToSize(m.texto,W-14);
+          doc.text(tl,ML+12,y+3.8); y+=Math.max(tl.length*4.2,7);
+        });
+      }
+    }
+
+    // FOTOS
+    if(d.fotos?.length){
+      checkPage(60); secH('Registro Fotográfico');
+      let fx=ML, fy=y;
+      for(let i=0;i<Math.min(d.fotos.length,6);i++){
+        checkPage(55);
+        try{doc.addImage(d.fotos[i],'JPEG',fx,fy,56,44);}catch(e){}
+        fx+=60; if(fx>170){fx=ML;fy+=48;y=fy;}
+      }
+      y=fy+50;
+    }
+
+    // PARTE IV — EQUIPE + ASSINATURAS
+    checkPage(30); secH('Parte IV — Equipe Envolvida e Assinaturas');
+    const eqW=[52,30,42,58];
+    ['Nome Legível','Função','Empresa','Assinatura'].forEach((h,i)=>{
+      let ax=ML; for(let j=0;j<i;j++) ax+=eqW[j];
+      doc.setFillColor(240,240,240); doc.rect(ax,y,eqW[i],5.5,'F');
+      doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(80,80,80);
+      doc.text(h.toUpperCase(),ax+1,y+3.8);
+    });
+    y+=5.5;
+
+    for (const eq of (d.equipe||[])) {
+      checkPage(22);
+      const rowH = eq.assinatura ? 22 : 10;
+      const vals=[eq.nome||'—',eq.func||'—',eq.emp||'—'];
+      vals.forEach((v,i)=>{
+        let ax=ML; for(let j=0;j<i;j++) ax+=eqW[j];
+        doc.setDrawColor(220,220,220); doc.rect(ax,y,eqW[i],rowH);
+        doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(20,20,20);
+        doc.text(v,ax+1.5,y+5);
+      });
+      // Coluna assinatura
+      let sax=ML; for(let j=0;j<3;j++) sax+=eqW[j];
+      doc.setDrawColor(220,220,220); doc.rect(sax,y,eqW[3],rowH);
+      if(eq.assinatura){
+        try{ doc.addImage(eq.assinatura,'PNG',sax+1,y+1,eqW[3]-2,rowH-2); }catch(e){}
+      }
+      y+=rowH;
+    }
+    y+=4;
+
+    // PARTE V
+    checkPage(30); secH('Parte V — Liberação da Atividade');
+    ['Gestor de Manutenção / Engenharia','Responsável pelo Serviço'].forEach((title,i)=>{
+      checkPage(22);
+      const nome=i===0?d.gestorNome:d.respNome;
+      const func=i===0?d.gestorFunc:d.respFunc;
+      doc.setFillColor(252,240,240); doc.rect(ML,y,W,20,'F');
+      doc.setDrawColor(220,180,180); doc.rect(ML,y,W,20);
+      doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...rgb);
+      doc.text(title.toUpperCase(),ML+2,y+5);
+      doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(120,120,120);
+      doc.text('NOME LEGÍVEL',ML+2,y+10);
+      doc.text('FUNÇÃO',ML+W/2+2,y+10);
+      doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(20,20,20);
+      doc.text(nome||'—',ML+2,y+16);
+      doc.text(func||'—',ML+W/2+2,y+16);
+      y+=22;
+    });
+
+    // PARTE VI
+    if(d.audResp||d.audObs){
+      checkPage(20); secH('Parte VI — Auditoria SESMT');
+      fl('Observação',d.audObs,ML,W*0.6);
+      fl('Responsável',d.audResp,ML+W*0.6+2,W*0.27);
+      fl('Data',d.audData,ML+W*0.88,W*0.12);
+      y+=10;
+    }
+
+    // RODAPÉ
+    const np=doc.getNumberOfPages();
+    for(let p=1;p<=np;p++){
+      doc.setPage(p);
+      doc.setFontSize(6.5);doc.setTextColor(150,150,150);
+      doc.text(`PSR Nº ${d.numPSR||'—'}  |  ${d.tipo}  |  Ad'oro S/A  |  Empresa: ${d.nomeEmpresa||'—'}  |  Pág. ${p}/${np}`, 105,293,{align:'center'});
+    }
+
+    const fn=`PSR_${d.numPSR||'0'}_${d.tipo.replace(/\s+/g,'_').replace(/[^\w]/g,'')}.pdf`;
+    doc.save(fn);
+    toast('📄 PDF gerado!');
+  } catch(err) {
+    console.error(err);
+    toast('Erro ao gerar PDF', true);
+  } finally { setOverlay(false); }
+}
+
+// ============================================================
+// REGISTROS
+// ============================================================
+function renderRegistros() {
+  document.getElementById('regCount').textContent = `${registros.length} registro${registros.length!==1?'s':''}`;
+  const b=document.getElementById('regBody');
+  if(!registros.length){ b.innerHTML='<div class="empty"><div style="font-size:44px;opacity:.3;margin-bottom:10px">📋</div><p>Nenhuma PSR registrada.</p></div>'; return; }
+  b.innerHTML=registros.map((r,i)=>`
+    <div class="reg-card">
+      <div class="reg-top">
+        <span class="reg-badge">${r.icon} ${r.tipo}</span>
+        <div style="text-align:right">
+          <div class="reg-num">Nº ${r.numPSR||'—'}</div>
+          <div class="reg-date">${r.inicio?.slice(0,10)?.split('-').reverse().join('/')||'—'}</div>
+        </div>
+      </div>
+      <div class="reg-info">
+        <p>${r.tarefa?.slice(0,55)||'Sem descrição'}${r.tarefa?.length>55?'...':''}</p>
+        <span>${r.local||'—'} • ${r.nomeEmpresa||r.codigoEmpresa||'—'}</span>
+      </div>
+      <div class="reg-acts">
+        <button class="bsm p" onclick="dlReg(${i})">📄 PDF</button>
+        <button class="bsm" onclick="dlReg(${i},true)">☁️ Reenviar</button>
+        <button class="bsm" onclick="delReg(${i})">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function delReg(i){ if(confirm('Excluir este registro?')){ registros.splice(i,1); localStorage.setItem('psr_v3',JSON.stringify(registros)); renderRegistros(); toast('Excluído'); } }
+
+async function dlReg(i, reenviar=false) {
+  const r=registros[i];
+  psrAtual=PSR_CFG.findIndex(p=>p.title===r.tipo);
+  if(psrAtual<0){toast('Tipo não encontrado',true);return;}
+  if(reenviar){
+    setOverlay(true,'Reenviando...');
+    try{
+      if(SHEETS_URL&&SHEETS_URL!=='SUA_URL_AQUI'){
+        const res=await fetch(SHEETS_URL,{method:'POST',body:JSON.stringify(r),headers:{'Content-Type':'text/plain'}});
+        const json=await res.json();
+        toast(json.ok?'☁️ Reenviado com sucesso!':'Erro: '+json.msg, !json.ok);
+      } else { toast('Configure a URL do Google Sheets primeiro',true); }
+    }catch(e){toast('Sem conexão',true);}
+    finally{setOverlay(false);}
+  } else { gerarPDF(r); }
+}
+
+// ============================================================
+// PAINEL INTERNO — SESMT / ENGENHEIRO
+// ============================================================
+const SENHAS = { 'SESMT': 'SESMT2024', 'ENG': 'ENG2024' };
+let roleSel = 'SESMT';
+let usuarioPainel = null;
+let tabAtual = 'pend';
+let psrEmRevisao = null;
+let canvasEng = null; let canvasSesmt = null;
+let signEngOk = false; let signSesmtOk = false;
+
+function setRole(r) {
+  roleSel = r;
+  document.getElementById('rb_sesmt').classList.toggle('active', r==='SESMT');
+  document.getElementById('rb_eng').classList.toggle('active', r==='ENG');
+}
+
+function loginPainel() {
+  const senha = document.getElementById('painelSenha').value;
+  if (!senha) { toast('Digite a senha', true); return; }
+  if (senha !== SENHAS[roleSel]) { toast('Senha incorreta', true); document.getElementById('painelSenha').value=''; return; }
+  usuarioPainel = roleSel;
+  document.getElementById('painelTitleBar').textContent = roleSel === 'SESMT' ? '👷 Painel SESMT' : '🔧 Painel Engenheiro';
+  document.getElementById('painelSubBar').textContent = roleSel === 'SESMT' ? 'Revisão, edição e liberação de PSRs' : 'Assinatura de PSRs pendentes';
+  document.getElementById('painelSenha').value = '';
+  renderPainel();
+  showScreen('sPainel');
+}
+
+function logoutPainel() { usuarioPainel = null; showScreen('sPainelLogin'); }
+
+function setTab(t) {
+  tabAtual = t;
+  ['pend','lib','rep'].forEach(x => {
+    document.getElementById(`tab_${x}`)?.classList.toggle('active', x===t);
+  });
+  renderPainel();
+}
+
+function getStatus(r) { return r.statusPSR || 'pendente'; }
+
+function renderPainel() {
+  const todos = registros;
+  const pend = todos.filter(r => ['pendente','aguardando_sesmt'].includes(getStatus(r)));
+  const lib  = todos.filter(r => getStatus(r) === 'liberada');
+  const rep  = todos.filter(r => getStatus(r) === 'reprovada');
+
+  document.getElementById('cnt_pend').textContent = pend.length;
+  document.getElementById('cnt_lib').textContent  = lib.length;
+  document.getElementById('cnt_rep').textContent  = rep.length;
+
+  const lista = tabAtual==='pend' ? pend : tabAtual==='lib' ? lib : rep;
+  const b = document.getElementById('painelBody');
+
+  if (!lista.length) {
+    b.innerHTML = '<div class="empty"><div style="font-size:44px;opacity:.3;margin-bottom:10px">📋</div><p>Nenhuma PSR nesta categoria.</p></div>';
+    return;
+  }
+
+  b.innerHTML = lista.map(r => {
+    const idx = registros.indexOf(r);
+    const st = getStatus(r);
+    const pillClass = st==='pendente'?'pill-pend':st==='aguardando_sesmt'?'pill-eng':st==='liberada'?'pill-lib':'pill-rep';
+    const pillTxt = st==='pendente'?'⏳ Pendente':st==='aguardando_sesmt'?'✍️ Aguard. SESMT':st==='liberada'?'✅ Liberada':'❌ Reprovada';
+
+    // Engenheiro só vê pendentes; SESMT vê pendentes + aguardando_sesmt
+    const podeAgir = usuarioPainel==='ENG' ? st==='pendente' : (st==='pendente'||st==='aguardando_sesmt');
+
+    return `<div class="psr-pend-card">
+      <span class="status-pill ${pillClass}">${pillTxt}</span>
+      <div class="psr-pend-title">${r.icon} ${r.tipo}</div>
+      <div class="psr-pend-info">Nº ${r.numPSR||'—'} • ${r.inicio?.slice(0,10)?.split('-').reverse().join('/')||'—'}</div>
+      <div class="psr-pend-info">${r.local||'—'} • ${r.nomeEmpresa||'—'}</div>
+      <div class="psr-pend-acts">
+        <button class="btn-rev" onclick="abrirRevisao(${idx})">${podeAgir?'✍️ Revisar e Assinar':'👁 Visualizar'}</button>
+        <button class="bsm p" onclick="gerarPDFPainel(${idx})">📄 PDF</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function gerarPDFPainel(idx) {
+  const r = registros[idx];
+  psrAtual = PSR_CFG.findIndex(p => p.title === r.tipo);
+  if (psrAtual < 0) { toast('Tipo não encontrado', true); return; }
+  gerarPDF(r);
+}
+
+function abrirRevisao(idx) {
+  psrEmRevisao = idx;
+  const r = registros[idx];
+  document.getElementById('revTitle').textContent = `PSR Nº ${r.numPSR||'—'}`;
+  document.getElementById('revSub').textContent = `${r.icon} ${r.tipo} • ${r.nomeEmpresa||'—'}`;
+  signEngOk = !!r.assinaturaEngenheiro;
+  signSesmtOk = !!r.assinaturaSESMT;
+  renderRevisao(r);
+  showScreen('sRevisao');
+}
+
+function renderRevisao(r) {
+  const st = getStatus(r);
+  const isSESMT = usuarioPainel === 'SESMT';
+  const podeEngAssinar = usuarioPainel==='ENG' && st==='pendente' && !r.assinaturaEngenheiro;
+  const podeSesmtAgir = isSESMT && (st==='pendente'||st==='aguardando_sesmt');
+
+  let html = '';
+
+  // IDENTIFICAÇÃO
+  html += `<div class="rev-section"><div class="rev-section-title">Identificação</div>
+    <div class="rev-field"><div class="rev-label">Tipo</div><div class="rev-val">${r.icon} ${r.tipo}</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="rev-field"><div class="rev-label">Nº PSR</div><div class="rev-val">${r.numPSR||'—'}</div></div>
+      <div class="rev-field"><div class="rev-label">Data</div><div class="rev-val">${r.inicio?.slice(0,10)?.split('-').reverse().join('/')||'—'}</div></div>
+    </div>
+    <div class="rev-field"><div class="rev-label">Empresa</div><div class="rev-val">${r.nomeEmpresa||'—'}</div></div>
+    <div class="rev-field"><div class="rev-label">Local</div><div class="rev-val">${r.local||'—'}</div></div>
+    <div class="rev-field"><div class="rev-label">Tarefa</div><div class="rev-val">${r.tarefa||'—'}</div></div>
+    ${r.maquinas?`<div class="rev-field"><div class="rev-label">Máquinas/Equipamentos</div><div class="rev-val">${r.maquinas}</div></div>`:''}
+  </div>`;
+
+  // RISCOS
+  const rm = (r.riscos||[]).filter(x=>x.checked);
+  if (rm.length) {
+    html += `<div class="rev-section"><div class="rev-section-title">Riscos Marcados</div><div class="rev-chk-grid">
+      ${rm.map(x=>`<div class="rev-chk on">⚠️ ${x.texto}</div>`).join('')}
+    </div></div>`;
+  }
+
+  // EPIS
+  const em = (r.epis||[]).filter(x=>x.checked);
+  if (em.length) {
+    html += `<div class="rev-section"><div class="rev-section-title">EPIs Selecionados</div><div class="rev-chk-grid">
+      ${em.map(x=>`<div class="rev-chk on">🦺 ${x.texto}</div>`).join('')}
+    </div></div>`;
+  }
+
+  // MEDIDAS
+  if (r.medidas?.length) {
+    html += `<div class="rev-section"><div class="rev-section-title">Medidas de Segurança</div>`;
+    r.medidas.forEach(m => {
+      const pc = m.val==='sim'?'pill-sim':m.val==='nao'?'pill-nao':m.val==='na'?'pill-na':'pill-vz';
+      html += `<div class="rev-med"><span class="rev-med-pill ${pc}">${m.val||'—'}</span><span class="rev-med-txt">${m.texto}${m.obs?` <em style="color:var(--muted)"> — ${m.obs}</em>`:''}</span></div>`;
+    });
+    html += `</div>`;
+  }
+
+  // EQUIPE
+  if (r.equipe?.length) {
+    html += `<div class="rev-section"><div class="rev-section-title">Equipe Envolvida</div>`;
+    r.equipe.forEach(eq => {
+      html += `<div style="padding:8px 0;border-bottom:1px solid var(--borda)">
+        <div style="font-size:13px;font-weight:600">${eq.nome||'—'}</div>
+        <div style="font-size:11px;color:var(--muted)">${eq.func||'—'} • ${eq.emp||'—'}</div>
+        ${eq.assinatura?`<img src="${eq.assinatura}" style="max-width:160px;margin-top:6px;border-radius:4px;border:1px solid var(--borda);background:white" alt="Assinatura">`:''}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // FOTOS
+  if (r.fotos?.length) {
+    html += `<div class="rev-section"><div class="rev-section-title">Fotos do Local</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${r.fotos.map(f=>`<img src="${f}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:5px;border:1px solid var(--borda)">`).join('')}
+      </div></div>`;
+  }
+
+  // SESMT: campos editáveis + observação
+  if (isSESMT) {
+    html += `<div class="rev-section"><div class="rev-section-title">✏️ Edição SESMT</div>
+      <div class="field"><label>Observação / Condicionantes</label>
+        <textarea id="sesmtObs" style="width:100%;background:var(--cinza-medio);border:1px solid var(--borda);border-radius:5px;padding:10px;color:var(--branco);font-family:Barlow,sans-serif;font-size:14px;outline:none;min-height:80px;resize:vertical">${r.obsSesMT||''}</textarea>
+      </div>
+      <div class="field" style="margin-top:10px"><label>Gestor de Manutenção — Nome</label>
+        <input type="text" id="sesmtGestNome" value="${r.gestorNome||''}" style="width:100%;background:var(--cinza-medio);border:1px solid var(--borda);border-radius:5px;padding:10px;color:var(--branco);font-family:Barlow,sans-serif;font-size:14px;outline:none">
+      </div>
+    </div>`;
+  }
+
+  // ASSINATURA ENGENHEIRO
+  html += `<div class="rev-section"><div class="rev-section-title">✍️ Assinatura — Engenheiro</div>`;
+  if (r.assinaturaEngenheiro) {
+    html += `<img src="${r.assinaturaEngenheiro}" style="max-width:100%;border-radius:5px;border:1px solid var(--borda);background:white">
+      <div style="font-size:11px;color:var(--verde);margin-top:6px">✅ Assinado em ${r.dataAssinaturaEng||'—'}</div>`;
+  } else if (podeEngAssinar) {
+    html += `<p style="font-size:12px;color:var(--muted);margin-bottom:8px">Assine para confirmar a revisão técnica:</p>
+      <div style="background:white;border-radius:6px;overflow:hidden;border:2px solid var(--borda);position:relative">
+        <canvas id="cvEng" style="width:100%;height:120px;display:block;cursor:crosshair;touch-action:none"></canvas>
+        <div id="slEng" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#ccc;pointer-events:none">✍️ Assine aqui com o dedo</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="btn-sign-clear" onclick="clearCvEng()">🗑 Limpar</button>
+        <button class="btn-sign-ok" onclick="saveSignEng()">✅ Confirmar</button>
+      </div>`;
+  } else {
+    html += `<div style="font-size:12px;color:var(--muted)">Aguardando assinatura do engenheiro.</div>`;
+  }
+  html += `</div>`;
+
+  // ASSINATURA SESMT
+  html += `<div class="rev-section"><div class="rev-section-title">✍️ Assinatura — SESMT</div>`;
+  if (r.assinaturaSESMT) {
+    html += `<img src="${r.assinaturaSESMT}" style="max-width:100%;border-radius:5px;border:1px solid var(--borda);background:white">
+      <div style="font-size:11px;color:var(--verde);margin-top:6px">✅ Assinado em ${r.dataAssinaturaSESMT||'—'}</div>`;
+  } else if (podeSesmtAgir) {
+    html += `<p style="font-size:12px;color:var(--muted);margin-bottom:8px">Assine para liberar a PSR:</p>
+      <div style="background:white;border-radius:6px;overflow:hidden;border:2px solid var(--borda);position:relative">
+        <canvas id="cvSesmt" style="width:100%;height:120px;display:block;cursor:crosshair;touch-action:none"></canvas>
+        <div id="slSesmt" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#ccc;pointer-events:none">✍️ Assine aqui com o dedo</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="btn-sign-clear" onclick="clearCvSesmt()">🗑 Limpar</button>
+        <button class="btn-sign-ok" onclick="saveSignSesmt()">✅ Confirmar</button>
+      </div>`;
+  } else {
+    html += `<div style="font-size:12px;color:var(--muted)">Aguardando assinatura do SESMT.</div>`;
+  }
+  html += `</div>`;
+
+  // AÇÕES
+  if (podeEngAssinar || podeSesmtAgir) {
+    html += `<div class="painel-acoes"><div class="painel-acoes-title">Ação</div>`;
+    if (podeEngAssinar) {
+      html += `<button class="btn-liberar" style="background:var(--azul)" onclick="engAssinouConfirmar()">✍️ Confirmar Assinatura e Encaminhar ao SESMT</button>`;
+    }
+    if (podeSesmtAgir) {
+      html += `<button class="btn-liberar" onclick="sesmtLiberar()">✅ Liberar PSR</button>
+        <button class="btn-reprovar" onclick="sesmtReprovar()">❌ Reprovar PSR</button>`;
+    }
+    html += `</div>`;
+  }
+
+  html += `<div style="height:30px"></div>`;
+  document.getElementById('revBody').innerHTML = html;
+
+  // Inicializar canvas
+  setTimeout(() => {
+    if (podeEngAssinar) initCvPainel('cvEng','slEng','eng');
+    if (podeSesmtAgir && !r.assinaturaSESMT) initCvPainel('cvSesmt','slSesmt','sesmt');
+  }, 100);
+}
+
+function initCvPainel(cvId, slId, tipo) {
+  const canvas = document.getElementById(cvId);
+  if (!canvas) return;
+  const label = document.getElementById(slId);
+  const ctx = canvas.getContext('2d');
+  // Ajustar resolução
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * window.devicePixelRatio || 600;
+  canvas.height = 120 * window.devicePixelRatio || 240;
+  ctx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  let drawing = false, hasDrawn = false;
+
+  const getPos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: src.clientX - r.left, y: src.clientY - r.top };
+  };
+
+  canvas.addEventListener('mousedown', e => { drawing=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+  canvas.addEventListener('mousemove', e => { if(!drawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); if(!hasDrawn){hasDrawn=true;if(label)label.style.opacity='0';} });
+  canvas.addEventListener('mouseup', () => drawing=false);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }, {passive:false});
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); if(!drawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); if(!hasDrawn){hasDrawn=true;if(label)label.style.opacity='0';} }, {passive:false});
+  canvas.addEventListener('touchend', () => drawing=false);
+
+  if (tipo==='eng') canvasEng = { canvas, hasDrawn: ()=>hasDrawn };
+  else canvasSesmt = { canvas, hasDrawn: ()=>hasDrawn };
+}
+
+function clearCvEng() { const c=document.getElementById('cvEng'); if(c){c.getContext('2d').clearRect(0,0,c.width,c.height); canvasEng=null; initCvPainel('cvEng','slEng','eng'); document.getElementById('slEng').style.opacity='1';} }
+function clearCvSesmt() { const c=document.getElementById('cvSesmt'); if(c){c.getContext('2d').clearRect(0,0,c.width,c.height); canvasSesmt=null; initCvPainel('cvSesmt','slSesmt','sesmt'); document.getElementById('slSesmt').style.opacity='1';} }
+
+function saveSignEng() {
+  if (!canvasEng?.hasDrawn()) { toast('Assine antes de confirmar', true); return; }
+  signEngOk = true; toast('✅ Assinatura do Engenheiro registrada!');
+}
+function saveSignSesmt() {
+  if (!canvasSesmt?.hasDrawn()) { toast('Assine antes de confirmar', true); return; }
+  signSesmtOk = true; toast('✅ Assinatura do SESMT registrada!');
+}
+
+function engAssinouConfirmar() {
+  if (!signEngOk) { toast('Confirme a assinatura primeiro', true); return; }
+  const r = registros[psrEmRevisao];
+  r.assinaturaEngenheiro = canvasEng.canvas.toDataURL('image/png');
+  r.dataAssinaturaEng = new Date().toLocaleString('pt-BR');
+  r.statusPSR = 'aguardando_sesmt';
+  salvarRegistros();
+  toast('✅ Encaminhado ao SESMT!');
+  setTimeout(() => { renderPainel(); showScreen('sPainel'); }, 1500);
+}
+
+function sesmtLiberar() {
+  if (!signSesmtOk) { toast('Confirme a assinatura do SESMT primeiro', true); return; }
+  const r = registros[psrEmRevisao];
+  r.assinaturaSESMT = canvasSesmt.canvas.toDataURL('image/png');
+  r.dataAssinaturaSESMT = new Date().toLocaleString('pt-BR');
+  r.statusPSR = 'liberada';
+  const obs = document.getElementById('sesmtObs')?.value;
+  if (obs) r.obsSesMT = obs;
+  const gestNome = document.getElementById('sesmtGestNome')?.value;
+  if (gestNome) r.gestorNome = gestNome;
+  salvarRegistros();
+  toast('✅ PSR Liberada com sucesso!');
+  setTimeout(() => { renderPainel(); showScreen('sPainel'); }, 1500);
+}
+
+function sesmtReprovar() {
+  const motivo = prompt('Informe o motivo da reprovação:');
+  if (!motivo) return;
+  const r = registros[psrEmRevisao];
+  r.statusPSR = 'reprovada';
+  r.motivoReprovacao = motivo;
+  r.dataReprovacao = new Date().toLocaleString('pt-BR');
+  salvarRegistros();
+  toast('❌ PSR Reprovada');
+  setTimeout(() => { renderPainel(); showScreen('sPainel'); }, 1500);
+}
+
+function salvarRegistros() {
+  localStorage.setItem('psr_v3', JSON.stringify(registros));
+}
+function toast(msg, err=false) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(err?' err':'');
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
